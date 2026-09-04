@@ -1,0 +1,106 @@
+
+    /* =========================================================
+       ROOT
+       ========================================================= */
+
+.root {
+    -fx-background-color: #1e1e1e;
+}
+
+
+/* =========================================================
+   TAB PANE
+   ========================================================= */
+
+.tab-pane {
+    -fx-background-color: #1e1e1e;
+    -fx-tab-min-height: 52px;
+    -fx-tab-max-height: 52px;
+}
+
+
+/* =========================================================
+   TAB HEADER AREA
+   ========================================================= */
+
+.tab-pane .tab-header-area {
+    -fx-background-color: #181818;
+    -fx-padding: 0 15px 0 15px;
+}
+
+.tab-pane .tab-header-background {
+    -fx-background-color: #181818;
+}
+
+
+/* =========================================================
+   TABS
+   ========================================================= */
+
+.tab-pane .tab {
+    -fx-background-color: transparent;
+
+    -fx-padding: 0 25px;
+
+    -fx-border-width: 0 0 3px 0;
+    -fx-border-color: transparent;
+}
+
+
+/* =========================================================
+   TAB LABEL
+   ========================================================= */
+
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #888888;
+
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.tab-pane .tab:hover {
+    -fx-background-color: #252525;
+}
+
+.tab-pane .tab:hover .tab-label {
+    -fx-text-fill: #dddddd;
+}
+
+
+/* =========================================================
+   SELECTED TAB
+   ========================================================= */
+
+.tab-pane .tab:selected {
+    -fx-background-color: #252525;
+
+    -fx-border-color: #00e676;
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #ffffff;
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.tab-pane .tab-content-area {
+    -fx-background-color: #1e1e1e;
+}
+
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+.tab-pane:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}

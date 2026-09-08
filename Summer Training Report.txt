@@ -1,0 +1,169 @@
+# 1. Introduction
+
+As part of my Computer Science education at Bilkent University, I completed my internship at ASELSAN, where I had the opportunity to gain practical experience in software development and observe how software engineering principles are applied in a professional environment. I chose ASELSAN because of its strong position in the technology and defense industry and the opportunity to work in a professional engineering environment. I was particularly interested in experiencing how software is developed within an engineering team and applying the theoretical knowledge I gained throughout my university education to a real-world project.
+
+During my internship, I worked on a Kotlin-based desktop application called **WebSocketApplication**. The project uses JavaFX to provide a graphical user interface and WebSocket technology to receive and process real-time data. My work involved several aspects of the application, including real-time data communication, user interface development, dependency injection, build configuration, and system architecture. One of the main technical aspects of the project was its **multi-tenant architecture**, which allows the same codebase to support different customers while providing each customer with their own set of screens and features.
+
+My motivation throughout the project was not only to implement individual features, but also to understand how different technologies and architectural decisions come together in a complete software system. In particular, working with Gradle and Koin allowed me to gain practical experience with tools that are commonly used to improve the organization, configurability, and maintainability of software projects. Developing a user interface through which an administrator can create and configure customers also helped me understand how technical requirements can be transformed into a practical user-facing solution.
+
+The project was important from both a technical and practical perspective because it demonstrated how a single software product can be designed to serve multiple customers without maintaining completely separate applications for each one. The combination of real-time communication, dependency injection, build-time configuration, and customer-specific feature management provided me with a broader understanding of software architecture and maintainability. The technologies used, system architecture, and work completed during the internship are discussed in the following sections.
+
+
+# 2. Company Information
+
+## 2.1. About the Company
+
+ASELSAN is one of the leading defense and technology companies in Türkiye. It develops high-technology systems in areas such as communication, radar, electronic warfare, command and control, avionics, and air defense. Due to the nature of its work, the company provides an engineering environment where reliability, performance, and systematic software development are highly important.
+
+During my internship, I worked within the **Defense Systems Technologies Sector Presidency (SST)**. SST is responsible for the development of various defense systems and technologies, including command and control systems. Due to the confidentiality of the projects carried out within the organization, specific information about the systems and their operational capabilities cannot be included in this report.
+
+## 2.2. About My Department
+
+I worked under the **Air Command and Control Software Design Directorate** within SST, as a member of the **Conductor team**. The team works on desktop-based software related to air command and control systems. Since these projects involve sensitive information concerning Türkiye's airspace, I cannot provide further technical or operational details about the systems developed by the department.
+
+Being part of this team allowed me to observe how software development is carried out in a professional defense-industry environment. In addition to my assigned technical work, I had the opportunity to learn about the development process, team collaboration, and the importance of designing reliable and maintainable software.
+
+## 2.3. Hardware and Software Systems
+
+My work during the internship was mainly focused on software development using a desktop computer. The specific hardware and infrastructure used by the department are not described in this report due to confidentiality requirements.
+
+For my project, I primarily used **Kotlin** with **JDK 21** and **JavaFX** for desktop application development. **Gradle** was used for build automation and dependency management, while **Koin** was used for dependency injection and **Jackson** for JSON processing. The project also used the Java WebSocket API to receive real-time market data and JVM management APIs to monitor system performance.
+
+## 2.4. About My Supervisor
+
+My mentor during the internship was **Ubeyde Rızaoğlu**, a **Senior Lead Engineer** at ASELSAN and a graduate of the **Middle East Technical University (METU) Computer Engineering Department, Class of 2011**.
+
+Throughout my internship, he provided valuable guidance on the project and helped me understand the technical decisions involved in my work. Whenever I encountered a problem or needed direction, he helped me approach it from an engineering perspective rather than simply providing a solution.
+
+His support was not limited to the technical aspects of the internship. He also shared valuable advice about university life, career planning, and professional development, which I found particularly useful as a Computer Science student. He also introduced me to different laboratories and parts of ASELSAN, giving me the opportunity to explore the company's working environment beyond my own team. This helped me gain a broader understanding of ASELSAN and made my internship experience more meaningful.
+
+
+# 3. Software Development and Implementation
+
+During my internship, I worked on the development of a desktop software application designed to demonstrate real-time data communication and a configurable multi-tenant software architecture. The main focus of my work was to understand how different software components could be combined into a maintainable application while allowing the same software to support multiple customers with different requirements.
+
+## 3.1. Project Architecture and Development Environment
+
+The project was developed using **Kotlin** on the JVM, with **JDK 21** as the target platform. I used **Gradle with Kotlin DSL** for build automation and dependency management. One of the important aspects of the project was learning how a build system can be used not only to compile an application, but also to control which customer-specific source files are included in a particular build.
+
+The application was structured into separate packages according to their responsibilities. These included the WebSocket communication layer, data models, customer configuration, dependency injection, and the JavaFX dashboard. This separation made the application easier to understand and allowed individual components to be developed and modified without unnecessarily affecting the rest of the system.
+
+## 3.2. Real-Time Data Communication with WebSocket
+
+One of the main tasks in the project was implementing a real-time communication layer using the **WebSocket API**. The application establishes an asynchronous WebSocket connection to an external data source and continuously receives data through this connection.
+
+I worked with the `java.net.http.WebSocket` API provided by JDK 21. The incoming messages were received through callback methods such as `onOpen`, `onText`, `onError`, and `onClose`. Since a WebSocket message can be delivered in multiple fragments, the received text fragments were accumulated using a `StringBuilder` and processed when the final fragment was received.
+
+The received data was represented using Kotlin data classes and processed using the **Jackson** library. This allowed the application to convert incoming JSON messages into structured objects that could be used by the rest of the application.
+
+Another important aspect was the asynchronous nature of the communication. Data was received on background threads, while JavaFX requires its user interface components to be modified from the JavaFX Application Thread. Therefore, UI updates were transferred to the appropriate thread using `Platform.runLater`. This allowed the application to process continuous incoming data without violating JavaFX's thread-safety requirements.
+
+## 3.3. Multi-Tenant Architecture
+
+The most important architectural feature of the project was its **multi-tenant structure**. The purpose of this design was to allow a single software codebase to support multiple customers while giving each customer a different set of available screens and features.
+
+Each customer has a configuration containing information such as the customer name and available dashboard screens. The supported screens are represented using a common feature structure, while each customer can enable a different subset of these features.
+
+For example, one customer may only have access to the basic monitoring screen, while another customer may also have additional performance or portfolio-related screens. The dashboard is therefore not fixed; it is dynamically constructed according to the selected customer's configuration.
+
+This architecture helped me understand an important software engineering problem: how to avoid maintaining separate versions of the same application for different customers. Instead of duplicating the entire project, common functionality is kept in the main codebase and customer-specific differences are represented through configuration and feature definitions.
+
+## 3.4. Customer Management and User Interaction
+
+Another significant part of the project was the development of a **Customer Creator** application. The purpose of this tool was to allow an administrator to create new customer profiles through a graphical user interface rather than manually creating and configuring source files.
+
+Through the interface, an administrator can enter a customer name and select the screens that should be available to that customer. The selected features are validated according to predefined rules before the customer is created. This prevents incompatible or incomplete feature configurations from being generated.
+
+After the administrator confirms the configuration, the system automatically generates the required Kotlin source files for the new customer. The generated files contain the customer's configuration and feature definitions and are placed in the appropriate customer-specific source directory.
+
+This approach significantly simplifies the process of adding customers. Instead of requiring a developer to manually create multiple files and ensure that package names, class names, and configurations are consistent, the administrator can perform the operation through a dedicated interface.
+
+## 3.5. Dependency Injection with Koin
+
+I also worked with **Koin** to implement dependency injection in the application. Customer-specific configuration objects and other shared components are registered in the Koin container and retrieved by the parts of the application that require them.
+
+Using dependency injection reduced direct dependencies between classes. For example, the dashboard does not need to know how a particular customer's configuration object is created. It simply requests the required dependency from the container.
+
+Working with Koin helped me understand the practical benefits of dependency injection, particularly in terms of modularity, maintainability, and testability. It also demonstrated how a dependency injection framework can be integrated into a Kotlin application without requiring a large amount of configuration.
+
+## 3.6. Gradle-Based Customer Configuration
+
+Gradle was also an important part of the multi-tenant architecture. The build process was configured so that a specific customer could be selected when building or running the application.
+
+The customer selection is passed as a Gradle property, and the build process includes the corresponding customer-specific source files and resources. This means that the resulting application can be packaged specifically for a particular customer instead of containing all customer configurations.
+
+This design combines **build-time configuration** with the application's runtime customer configuration. As a result, the same main codebase can be used to produce different customer-specific versions of the application while keeping the common functionality shared.
+
+## 3.7. Feature Validation and Application Reliability
+
+Since different customers can have different combinations of screens, certain combinations need to be controlled. For this purpose, I worked with a rule-based validation structure consisting of `FeatureRules` and `FeatureValidator`.
+
+The rules define which features require other features and which features are incompatible with each other. Before the application starts, the selected customer's feature configuration is validated. If an invalid configuration is detected, the application stops with an appropriate error instead of starting with an inconsistent setup.
+
+This approach follows the **fail-fast** principle. Detecting configuration errors at startup makes potential problems easier to identify and prevents invalid customer configurations from reaching later stages of execution.
+
+## 3.8. Overall Contribution and Learning Outcome
+
+The main value of this project was that it brought together several software engineering concepts within a single application. Rather than developing an isolated user interface or a simple data receiver, I worked on a system involving real-time communication, asynchronous processing, dependency injection, build automation, configurable features, and multi-tenant customer management.
+
+Through this work, I gained practical experience with **Kotlin, JavaFX, WebSocket communication, Gradle, Koin, JSON processing, and software architecture**. More importantly, I learned how design decisions such as dependency injection, feature configuration, build-time customization, and automated customer creation can be used to make a software product easier to maintain and adapt to different customer requirements.
+
+
+# 4. Performance and Outcomes
+
+## 4.1. Solving Complex Engineering Problems
+
+One of the most challenging parts of my internship was designing the application so that different customers could use the same software while having access to different sets of screens. This required me to understand how customer-specific configurations could be separated from the common application code and how these configurations could be included during the build process.
+
+I worked on both the customer-specific feature structure and the Gradle build configuration. The main challenge was ensuring that selecting a customer would result in a consistent application containing the correct screens and resources. Solving this problem helped me understand how application architecture and build systems can work together to solve a real software engineering requirement.
+
+## 4.2. Recognizing Ethical and Professional Responsibilities
+
+Working at ASELSAN made me particularly aware of the importance of confidentiality and information security. Since the projects and systems developed within the organization may contain sensitive information, I was careful about what information I accessed, shared, and included in my work. I also paid particular attention to the use of external tools and AI-based services when working on my internship tasks and preparing this report. My mentor and I maintained continuous communication to ensure that I followed the appropriate practices.
+
+The technical environment itself also reinforced this awareness, as access to many external websites was restricted on the computer provided to me. I therefore learned to work within the available resources and to be conscious of the boundaries associated with working in a defense-industry organization.
+
+I also observed the importance of professional behavior in the workplace. Although there was no strict dress code, employees generally maintained a professional appearance and communication style. I tried to adopt the same attitude throughout my internship and to behave appropriately in meetings, daily interactions, and technical discussions.
+
+## 4.3. Making Informed Judgements
+
+An example of making an informed technical decision during my internship was the decision to use **Koin** for dependency injection. The project could technically have been implemented without a dependency injection framework. However, my mentor suggested that I investigate how Koin could be used for different dependency management scenarios and how concepts such as singleton and factory scopes could be useful.
+
+I researched the framework through its documentation and examined relevant examples before applying it to the project. After understanding its capabilities and comparing them with the requirements of our application, I concluded that Koin was a good fit for our Kotlin-based project. This experience taught me that choosing a technology should be based on understanding the problem and evaluating available alternatives rather than simply using a technology because it is popular.
+
+## 4.4. Acquiring New Knowledge Using Appropriate Learning Strategies
+
+Most of the technologies I used during the internship, except for JavaFX, were new to me. Instead of being expected to immediately start developing the complete application, I was first given smaller learning objectives by my mentor.
+
+I initially learned the fundamentals of **Gradle** and how it integrates with Kotlin projects. I then studied how to receive data through a WebSocket connection, convert the incoming data into objects, and parse it into a usable structure. After gaining a sufficient understanding of these concepts, I moved on to dependency injection and investigated Koin.
+
+Throughout this process, I used official documentation, examined similar implementations on GitHub, and discussed the code and possible approaches with my mentor. I also learned through experimentation by implementing small changes and observing their effects. This combination of documentation, code examination, discussion, and practical experimentation allowed me to learn unfamiliar technologies in a structured way.
+
+## 4.5. Applying New Knowledge as Needed
+
+The knowledge I acquired during the internship was directly applied to the development of the project. After learning Gradle, I used it to understand and implement the customer-specific build process. Similarly, after learning the fundamentals of WebSocket communication and JSON parsing, I applied them to the real-time data layer of the application.
+
+The knowledge I gained about Koin was also directly incorporated into the project by using dependency injection for shared application components and customer-specific configurations. As I learned new concepts, I continuously integrated them into the existing application rather than treating the learning process as separate from development.
+
+I also developed the habit of testing the application after each significant change. By checking whether the application still behaved as expected after modifications, I was able to detect problems early and maintain the stability of the project while introducing new functionality.
+
+## 4.6. Awareness of Diversity, Equity, and Inclusion
+
+During my internship, I had the opportunity to interact with people with very different levels of professional experience, ranging from newly graduated employees to engineers who had been working at ASELSAN for approximately thirty years. This allowed me to observe different perspectives and approaches to software engineering and professional life.
+
+There was also diversity among the interns. I met interns from different countries, including Nigeria and Azerbaijan. We supported each other in adapting to the working environment and tried to make sure that everyone felt comfortable and included in the team.
+
+I also observed an inclusive approach toward interns within the organization. Interns were provided with the necessary equipment and working resources without being treated differently because of their status as students. I never felt that I was merely an intern who was excluded from the team; instead, I was welcomed into the working environment and given the opportunity to communicate and collaborate with experienced employees. This experience helped me appreciate the importance of creating a workplace where people with different backgrounds and levels of experience can work together respectfully and equally.
+
+
+# 5. Conclusion
+
+My internship at ASELSAN was a valuable opportunity to experience software development in a professional engineering environment. Working within the Air Command and Control Software Design Directorate and being part of the Conductor team allowed me to observe how software development is approached in a large-scale technology and defense company. The working environment also helped me understand the importance of professional communication, teamwork, responsibility, and confidentiality.
+
+One of the most important outcomes of my internship was gaining practical experience with technologies and concepts that I had not previously used in depth. I learned how to work with **Kotlin, Gradle, WebSocket communication, Koin, and JSON processing**, and applied these technologies directly to the project. In particular, working with Gradle helped me understand how build systems can be used to configure and package software for different requirements, while Koin gave me practical experience with dependency injection.
+
+I also gained a better understanding of software architecture through the development of the **multi-tenant structure**. Designing a system where different customers can have different sets of screens while sharing the same codebase showed me the importance of modularity, configurability, and maintainability. Developing the Customer Creator interface further demonstrated how automation and user interaction can simplify what would otherwise be a repetitive development task.
+
+Beyond the technical knowledge, the internship improved my ability to learn unfamiliar technologies independently. I regularly used documentation, examined existing implementations, tested my changes, and discussed possible approaches with my mentor. This process helped me become more comfortable with solving problems that I had not encountered before.
+
+Overall, the internship helped me bridge the gap between my academic Computer Science education and professional software engineering practice. The technical knowledge I gained, together with the experience of working in a professional team and receiving guidance from experienced engineers, gave me a clearer understanding of the skills and responsibilities required in the software engineering field. I consider this internship an important step in my development as a Computer Science student and as a future software engineer.

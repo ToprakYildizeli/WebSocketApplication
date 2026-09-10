@@ -1,5 +1,6 @@
 package di
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import customer.CustomerConfig
 import customer.CustomerFeatures
 import customer.FeatureValidator
@@ -16,6 +17,10 @@ fun appModule(
 
     single<CustomerFeatures> {
         customerFeatures
+    }
+
+    single<ObjectMapper> {
+        ObjectMapper()
     }
 
     single<FeatureValidator> {

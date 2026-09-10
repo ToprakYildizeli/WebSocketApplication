@@ -2,6 +2,7 @@ package dashboard.btc
 
 import model.TradeData
 import com.fasterxml.jackson.databind.ObjectMapper
+import dashboard.TradeBus
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -12,8 +13,7 @@ import javafx.scene.layout.VBox
 import websocket.WebSocketReader
 
 class BtcScreen(
-    private val objectMapper: ObjectMapper,
-    private val onTrade: ((TradeData) -> Unit)? = null
+    private val objectMapper: ObjectMapper
 ) {
 
     private lateinit var webSocketReader: WebSocketReader
@@ -215,8 +215,8 @@ class BtcScreen(
                     // Mevcut BTC ekranını güncelle
                     updateCoin(trade)
 
-                    // Aynı canlı veriyi Portfolio'ya gönder
-                    onTrade?.invoke(trade)
+                    // Aynı canlı veriyi ilgilenen ekranlara yayınla
+                    TradeBus.publish(trade)
                 }
             }
 

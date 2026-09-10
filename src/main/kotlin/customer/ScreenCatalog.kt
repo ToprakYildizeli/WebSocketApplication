@@ -6,10 +6,6 @@ class ScreenCatalog(
     private val resourcePath: String = "/screens.properties"
 ) {
 
-    // =========================================================
-    // AVAILABLE
-    // =========================================================
-
     fun available(): List<DashboardScreen> {
 
         val properties =

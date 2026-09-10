@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     kotlin("jvm") version "2.3.0"
     application
@@ -49,9 +51,72 @@ val customer =
 val customerDir =
     file("src/customers/$customer")
 
+require(customerDir.isDirectory) {
+    "Unknown customer: '$customer'. Available: " +
+            (file("src/customers").list()?.sorted()?.joinToString(", ") ?: "-")
+}
+
+// =====================================================
+// SCREEN SELECTION
+// =====================================================
+//
+// Musterinin ekran listesi customer.properties dosyasindan
+// okunur. Kotlin kaynaklari bu noktada henuz derlenmedigi
+// icin build, listeyi kaynak koddan ogrenemez; bu yuzden
+// build'in okuyabilecegi bir dosyada tutulur.
+//
+// Yalnizca burada yazan ekranlarin kaynak dizini derlemeye
+// eklenir. Secilmeyen ekranin kodu derlenmez ve jar icine
+// girmez.
+//
+// =====================================================
+
+val screensDir =
+    file("src/screens")
+
+val customerProperties =
+    Properties().apply {
+
+        val propertiesFile =
+            customerDir.resolve("customer.properties")
+
+        require(propertiesFile.isFile) {
+            "customer.properties not found for '$customer': " +
+                    propertiesFile.absolutePath
+        }
+
+        propertiesFile.inputStream().use {
+            load(it)
+        }
+    }
+
+val enabledScreens =
+    customerProperties
+        .getProperty("screens")
+        .orEmpty()
+        .split(",")
+        .map { it.trim().uppercase() }
+        .filter { it.isNotEmpty() }
+
+val availableScreens =
+    screensDir.list()?.sorted().orEmpty()
+
+enabledScreens.forEach { screen ->
+
+    require(screen in availableScreens) {
+        "Unknown screen '$screen' in $customer/customer.properties. " +
+                "Available: ${availableScreens.joinToString(", ")}"
+    }
+}
+
+val excludedScreens =
+    availableScreens - enabledScreens.toSet()
+
 println("==============================================")
 println("Building customer: $customer")
 println("Customer directory: ${customerDir.absolutePath}")
+println("Compiled screens:   ${enabledScreens.joinToString(", ").ifEmpty { "-" }}")
+println("Excluded screens:   ${excludedScreens.joinToString(", ").ifEmpty { "-" }}")
 println("==============================================")
 
 tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
@@ -61,6 +126,15 @@ tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
             include("**/*.kt")
         }
     )
+
+    enabledScreens.forEach { screen ->
+
+        source(
+            fileTree(screensDir.resolve("$screen/kotlin")) {
+                include("**/*.kt")
+            }
+        )
+    }
 }
 
 
@@ -69,6 +143,13 @@ tasks.processResources {
     from(
         customerDir.resolve("resources")
     )
+
+    enabledScreens.forEach { screen ->
+
+        from(
+            screensDir.resolve("$screen/resources")
+        )
+    }
 }
 
 // =====================================================

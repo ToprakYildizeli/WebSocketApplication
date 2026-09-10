@@ -1,32 +1,29 @@
 package dashboard
 
-import dashboard.btc.BtcScreen
-import dashboard.portfolio.PortfolioScreen
-
-
-import com.fasterxml.jackson.databind.ObjectMapper
 import customer.DashboardScreen
-import dashboard.orders.OrdersScreen
-import dashboard.performance.PerformanceScreen
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 
 class DashboardController {
 
-    private val objectMapper =
-        ObjectMapper()
+    // =========================================================
+    // TAB SIRASI
+    // =========================================================
+    //
+    // Ekran sınıflarına referans yok, yalnızca enum değerleri.
+    //
+    // =========================================================
 
-    private var btcScreen:
-            BtcScreen? = null
+    private val displayOrder =
+        listOf(
+            DashboardScreen.PORTFOLIO,
+            DashboardScreen.ORDERS,
+            DashboardScreen.PERFORMANCE,
+            DashboardScreen.BTC
+        )
 
-    private var performanceScreen:
-            PerformanceScreen? = null
-
-    private var portfolioScreen:
-            PortfolioScreen? = null
-
-    private var ordersScreen:
-            OrdersScreen? = null
+    private val activeModules =
+        mutableListOf<ScreenModule>()
 
     // =========================================================
     // START
@@ -46,143 +43,6 @@ class DashboardController {
         )
 
         // =====================================================
-        // PORTFOLIO
-        // =====================================================
-
-        if (DashboardScreen.PORTFOLIO in screens) {
-
-            println(
-                "Portfolio screen starting..."
-            )
-
-            portfolioScreen =
-                PortfolioScreen()
-
-            val tab =
-                Tab(
-                    "PORTFOLIO"
-                )
-
-            tab.isClosable =
-                false
-
-            tab.content =
-                portfolioScreen!!.create()
-
-            tabPane.tabs.add(
-                tab
-            )
-        }
-
-        // =====================================================
-        // ORDERS
-        // =====================================================
-
-        if (DashboardScreen.ORDERS in screens) {
-
-            println(
-                "Orders screen starting..."
-            )
-
-            ordersScreen =
-                OrdersScreen()
-
-            val tab =
-                Tab(
-                    "ORDERS"
-                )
-
-            tab.isClosable =
-                false
-
-            tab.content =
-                ordersScreen!!.create()
-
-            tabPane.tabs.add(
-                tab
-            )
-        }
-
-        // =====================================================
-        // PERFORMANCE
-        // =====================================================
-
-        if (DashboardScreen.PERFORMANCE in screens) {
-
-            println(
-                "Performance screen starting..."
-            )
-
-            performanceScreen =
-                PerformanceScreen()
-
-            val tab =
-                Tab(
-                    "PERFORMANCE"
-                )
-
-            tab.isClosable =
-                false
-
-            tab.content =
-                performanceScreen!!.create()
-
-            tabPane.tabs.add(
-                tab
-            )
-
-            performanceScreen!!
-                .startMonitor()
-        }
-
-        // =====================================================
-        // BTC
-        // =====================================================
-
-        if (DashboardScreen.BTC in screens) {
-
-            println(
-                "BTC screen starting..."
-            )
-
-            btcScreen =
-                BtcScreen(
-                    objectMapper
-                ) { trade ->
-
-                    // =========================================
-                    // PORTFOLIO LIVE DATA
-                    // =========================================
-
-                    portfolioScreen?.updateTrade(
-                        trade
-                    )
-                }
-
-            val tab =
-                Tab(
-                    "BTC"
-                )
-
-            tab.isClosable =
-                false
-
-            tab.content =
-                btcScreen!!.create()
-
-            tabPane.tabs.add(
-                tab
-            )
-
-            // =================================================
-            // WEBSOCKET
-            // =================================================
-
-            btcScreen!!
-                .startWebSocket()
-        }
-
-        // =====================================================
         // NONE
         // =====================================================
 
@@ -191,6 +51,51 @@ class DashboardController {
             println(
                 "No screens enabled."
             )
+
+            return
+        }
+
+        // =====================================================
+        // CREATE
+        // =====================================================
+
+        displayOrder
+            .filter { it in screens }
+            .forEach { screen ->
+
+                println(
+                    "$screen screen starting..."
+                )
+
+                val module =
+                    ScreenRegistry.load(screen)
+
+                activeModules.add(module)
+
+                val tab =
+                    Tab(screen.name)
+
+                tab.isClosable =
+                    false
+
+                tab.content =
+                    module.create()
+
+                tabPane.tabs.add(tab)
+            }
+
+        // =====================================================
+        // START
+        // =====================================================
+        //
+        // Tüm ekranlar kurulduktan sonra başlatılır; böylece
+        // canlı veri akmaya başladığında dinleyiciler
+        // (TradeBus.subscribe) çoktan kayıtlıdır.
+        //
+        // =====================================================
+
+        activeModules.forEach { module ->
+            module.start()
         }
     }
 
@@ -204,48 +109,18 @@ class DashboardController {
             "DashboardController stopping..."
         )
 
-        // =====================================================
-        // BTC
-        // =====================================================
+        activeModules.forEach { module ->
 
-        try {
+            try {
 
-            btcScreen?.stop()
+                module.stop()
 
-        } catch (_: Exception) {
+            } catch (_: Exception) {
+            }
         }
 
-        // =====================================================
-        // PERFORMANCE
-        // =====================================================
+        activeModules.clear()
 
-        try {
-
-            performanceScreen?.stop()
-
-        } catch (_: Exception) {
-        }
-
-        // =====================================================
-        // PORTFOLIO
-        // =====================================================
-
-        try {
-
-            portfolioScreen?.stop()
-
-        } catch (_: Exception) {
-        }
-
-        // =====================================================
-        // ORDERS
-        // =====================================================
-
-        try {
-
-            ordersScreen?.stop()
-
-        } catch (_: Exception) {
-        }
+        TradeBus.clear()
     }
 }

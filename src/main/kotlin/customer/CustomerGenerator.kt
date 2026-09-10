@@ -43,6 +43,11 @@ class CustomerGenerator(
                 dashboardScreens = dashboardScreens
             )
 
+            generateScreenProperties(
+                customerDirectory = customerDirectory,
+                dashboardScreens = dashboardScreens
+            )
+
         } catch (exception: Exception) {
 
             customerDirectory
@@ -159,6 +164,48 @@ class CustomerGenerator(
         Files.writeString(
             kotlinDirectory.resolve(
                 "${className}Features.kt"
+            ),
+            content
+        )
+    }
+
+    // =========================================================
+    // SCREEN PROPERTIES
+    // =========================================================
+    //
+    // build.gradle.kts, hangi ekranlarin derlenecegini bu
+    // dosyadan okur. Kotlin kaynaklari derleme aninda henuz
+    // hazir olmadigi icin ayni liste hem Features.kt icine
+    // hem de buraya yazilir.
+    //
+    // =========================================================
+
+    private fun generateScreenProperties(
+        customerDirectory: Path,
+        dashboardScreens: Set<DashboardScreen>
+    ) {
+
+        val screens =
+            dashboardScreens.joinToString(",") {
+                it.name
+            }
+
+        val content = """
+            # Bu musterinin derlemeye dahil edilecek ekranlari.
+            #
+            # build.gradle.kts bu listeyi okur ve yalnizca burada yazan
+            # ekranlarin kaynak dizinlerini derlemeye ekler. Listede
+            # olmayan bir ekranin kodu derlenmez, jar icine girmez.
+            #
+            # Gecerli degerler: src/screens/ altindaki dizin isimleri.
+            # CustomerXFeatures.kt ile ayni listeyi icermelidir.
+
+            screens=$screens
+        """.trimIndent()
+
+        Files.writeString(
+            customerDirectory.resolve(
+                "customer.properties"
             ),
             content
         )
